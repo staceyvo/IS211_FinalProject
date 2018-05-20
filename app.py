@@ -109,6 +109,10 @@ def create_database():
     return redirect(url_for('dashboard'))
 
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(host='localhost')
