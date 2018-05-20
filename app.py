@@ -1,6 +1,7 @@
 import sqlite3
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from wtforms import Form, validators, StringField, PasswordField, DateField, SelectField
+from wtforms import Form, validators, StringField, PasswordField, DateField, SelectField, TextAreaField
 
 app = Flask(__name__)
 app.secret_key = 'Mighty Ducks'
@@ -11,6 +12,9 @@ class LoginForm(Form):
     username = StringField(u'Username', [validators.required(), validators.length(max=100)])
     password = PasswordField(u'Password', [validators.required(), validators.length(max=100)])
 
+class NewEntryForm(Form):
+    title = StringField(u'Title', [validators.required(), validators.length(max=200)])
+    body = TextAreaField(u'Body', [validators.required(), validators.length(max=200000)])
 
 @app.route('/', methods=['GET'])
 def home_route():
@@ -44,7 +48,14 @@ def dashboard():
     if 'username' not in session:
         return redirect(url_for('login'))
     # TODO query for data when available
-    return render_template('dashboard.html')
+    if request.method == 'POST':
+        con = sqlite3.connect('my_blog.db')
+        cur = con.cursor()
+        cur.execute('INSERT INTO post ("title", "text", "author", "published") VALUES (?,?,?,?)',
+                    (request.form['title'], request.form['body'], session['username'], datetime.now()))
+        con.commit()
+        con.close()
+    return render_template('dashboard.html', my_form=NewEntryForm())
 
 
 @app.route('/create_database')

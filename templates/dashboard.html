@@ -6,5 +6,21 @@
 </head>
 <body>
     <p>where we're going, we don't need roads!</p>
+
+    {% if error %}
+<p><strong>Error:</strong> {{ error }}
+    {% endif %}
+
+    <form action="" method=post>
+        <div>
+            {{ my_form.title.label }} {{ my_form.title }}
+        </div>
+
+        <div>
+            {{ my_form.body.label }} {{ my_form.body }}
+        </div>
+
+        <p><input type=submit></p>
+    </form>
 </body>
 </html>
