@@ -1,0 +1,9 @@
+
+
+DROP TABLE IF EXISTS post;
+CREATE TABLE post(
+title VARCHAR(100),
+published TEXT,
+author VARCHAR(100),
+text VARCHAR(200000)
+);
