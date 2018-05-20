@@ -67,6 +67,17 @@ def delete(id):
     return redirect(url_for('dashboard'))
 
 
+@app.route('/edit/<id>', methods=['POST', 'GET'])
+def edit(id):
+    con = sqlite3.connect('my_blog.db')
+
+
+
+    post = con.cursor().execute('SELECT title, id, published, author, text FROM post WHERE id=?', id).fetchone()
+    con.commit()
+    return render_template('edit.html', post=post)
+
+
 @app.route('/create_database')
 def create_database():
     if 'username' not in session:
