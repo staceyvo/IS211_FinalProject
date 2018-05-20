@@ -47,15 +47,24 @@ def login():
 def dashboard():
     if 'username' not in session:
         return redirect(url_for('login'))
-    # TODO query for data when available
+    con = sqlite3.connect('my_blog.db')
+    cur = con.cursor()
     if request.method == 'POST':
-        con = sqlite3.connect('my_blog.db')
-        cur = con.cursor()
         cur.execute('INSERT INTO post ("title", "text", "author", "published") VALUES (?,?,?,?)',
                     (request.form['title'], request.form['body'], session['username'], datetime.now()))
         con.commit()
-        con.close()
-    return render_template('dashboard.html', my_form=NewEntryForm())
+
+    posts = cur.execute('SELECT title, text, id FROM post').fetchall()
+    con.close()
+    return render_template('dashboard.html', my_form=NewEntryForm(), posts=posts)
+
+
+@app.route('/delete/<id>')
+def delete(id):
+    con = sqlite3.connect('my_blog.db')
+    con.cursor().execute('Delete FROM post WHERE id=?', id)
+    con.commit()
+    return redirect(url_for('dashboard'))
 
 
 @app.route('/create_database')

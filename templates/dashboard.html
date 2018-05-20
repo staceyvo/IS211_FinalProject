@@ -22,5 +22,14 @@
 
         <p><input type=submit></p>
     </form>
+<table>
+{% for post in posts %}
+    <tr>
+        <td>{{ post[0] }}</td>
+        <td><a href="/edit/{{ post[2] }}">Edit</a></td>
+        <td><a href="/delete/{{ post[2] }}">Delete</a></td>
+    </tr>
+{% endfor %}
+</table>
 </body>
 </html>
