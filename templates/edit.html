@@ -23,5 +23,16 @@
         <td>{{ post[4] }}</td>
     </tr>
 </table>
+<form method="post">
+    <div>
+        {{ my_form.title.label }} {{ my_form.title }}
+    </div>
+
+    <div>
+        {{ my_form.body.label }} {{ my_form.body }}
+    </div>
+
+    <p><input type=submit></p>
+</form>
 </body>
 </html>

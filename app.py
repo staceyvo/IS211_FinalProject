@@ -16,6 +16,11 @@ class NewEntryForm(Form):
     title = StringField(u'Title', [validators.required(), validators.length(max=200)])
     body = TextAreaField(u'Body', [validators.required(), validators.length(max=200000)])
 
+class EditEntryForm(Form):
+    title = StringField(u'Title', [validators.length(max=200)])
+    body = TextAreaField(u'Body', [validators.length(max=200000)])
+
+
 @app.route('/', methods=['GET'])
 def home_route():
     if 'username' in session:
@@ -47,6 +52,7 @@ def login():
 def dashboard():
     if 'username' not in session:
         return redirect(url_for('login'))
+
     con = sqlite3.connect('my_blog.db')
     cur = con.cursor()
     if request.method == 'POST':
@@ -61,6 +67,9 @@ def dashboard():
 
 @app.route('/delete/<id>')
 def delete(id):
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     con = sqlite3.connect('my_blog.db')
     con.cursor().execute('Delete FROM post WHERE id=?', id)
     con.commit()
@@ -69,13 +78,23 @@ def delete(id):
 
 @app.route('/edit/<id>', methods=['POST', 'GET'])
 def edit(id):
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     con = sqlite3.connect('my_blog.db')
+    cur = con.cursor()
+    if request.method == 'POST':
+        title = request.form['title']
+        body = request.form['body']
 
-
+        if title:
+            cur.execute('UPDATE post SET title = ? WHERE id=?', (title, id))
+        if body:
+            cur.execute('UPDATE post SET text = ? WHERE id=?', (body, id))
+        con.commit()
 
     post = con.cursor().execute('SELECT title, id, published, author, text FROM post WHERE id=?', id).fetchone()
-    con.commit()
-    return render_template('edit.html', post=post)
+    return render_template('edit.html', my_form=EditEntryForm(), post=post)
 
 
 @app.route('/create_database')
